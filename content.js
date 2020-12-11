@@ -249,38 +249,40 @@ function obtenerDatos() {
 
     objetoTabla = [];
 
-    for (let index = 1; index < coleccion.length; index++) {
+    for (let index = 0; index < coleccion.length; index++) {
         let element = coleccion[index];
-        for (let j = 0; j < element.children.length; j++) {
-            let element2 = element.children[j];
-            if (j == 1) {
-                titulo = element2.innerText;
-                showN = element2.children[0].attributes[0].nodeValue;
-                showN = showN.slice(7, showN.length - 2);
-                $.ajax({
-                    async: false,
-                    type: 'GET',
-                    url: 'showNota?notaKey=' + showN,
-                    success: function (data) {
-                        var posicion = String(data).indexOf("http://portal.nexnews.cl/showN?valor=")
-                        link = "http://portal.nexnews.cl/showN?valor=" + String(data).slice(posicion + 37, posicion + 42);
-                    }
-                });
-            }
-            if (j == 2) {
-                medio = element2.innerText;
-            }
-            if (j == 3) {
-                nuevo = {
-                    "titulo": titulo,
-                    "medio": medio,
-                    "link": link,
-                    "busqueda": texto.value,
-                    "pagina": document.getElementsByClassName("paginate_button current")[0].innerText,
+        if (element.className == "tr-busc odd" || element.className == "tr-busc even") {
+            for (let j = 0; j < element.children.length; j++) {
+                let element2 = element.children[j];
+                if (j == 1) {
+                    titulo = element2.innerText;
+                    showN = element2.children[0].attributes[0].nodeValue;
+                    showN = showN.slice(7, showN.length - 2);
+                    $.ajax({
+                        async: false,
+                        type: 'GET',
+                        url: 'showNota?notaKey=' + showN,
+                        success: function (data) {
+                            var posicion = String(data).indexOf("http://portal.nexnews.cl/showN?valor=")
+                            link = "http://portal.nexnews.cl/showN?valor=" + String(data).slice(posicion + 37, posicion + 42);
+                        }
+                    });
                 }
-                objetoTabla.push(nuevo);
-                objetoBusqueda.push(nuevo);
-                break;
+                if (j == 2) {
+                    medio = element2.innerText;
+                }
+                if (j == 3) {
+                    nuevo = {
+                        "titulo": titulo,
+                        "medio": medio,
+                        "link": link,
+                        "busqueda": texto.value,
+                        "pagina": document.getElementsByClassName("paginate_button current")[0].innerText,
+                    }
+                    objetoTabla.push(nuevo);
+                    objetoBusqueda.push(nuevo);
+                    break;
+                }
             }
         }
     }
