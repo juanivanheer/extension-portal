@@ -384,9 +384,20 @@ function enviarMail() {
         link.appendChild(linkText);
         link.href = encodedUri;
         link.id = 'fileLink';
-        link.download = 'correo.eml';
+
+        var nombre_archivo = "BUSQUEDA_" + String(calcularFechaActualArchivo()).replace(/\s+/g, '') + "_";
+        for (let index = 0; index < rubros.length; index++) {
+            const element = rubros[index];
+            if (index == rubros.length - 1) {
+                nombre_archivo += element + ".eml";
+            } else {
+                nombre_archivo += element + "_";
+            }
+        }
+
+        link.download = nombre_archivo;
         link.style = "display:none;"; //hidden link
-        
+
         if (document.getElementById("fileLink") == null) {
             document.body.appendChild(link);
         } else {
@@ -408,6 +419,14 @@ function calcularFechaActual() {
     fecha += obtenerMes();
     fecha += ' DE ' + fecha_actual.getFullYear();
     fecha += ")";
+
+    return fecha;
+}
+
+function calcularFechaActualArchivo() {
+    var fecha =  fecha_actual.getDate() + '_';
+    fecha += obtenerMes();
+    fecha += '_' + fecha_actual.getFullYear();
 
     return fecha;
 }
