@@ -10,8 +10,19 @@ var div_mail = document.createElement("div");
 div_mail.innerHTML = '<a id="mail" class="btn btn-default btn-sm"><i class="fa fa-paper-plane"></i> Generar mail </a>';
 div_mail.style.textAlign = "center";
 div_mail.style.marginBottom = "20px";
+div_mail.id = "div_mail";
 
-var fecha_actual = new Date;
+var btn_eliminar_listado = document.createElement("button");
+btn_eliminar_listado.id = "btn_eliminar_listado"
+btn_eliminar_listado.className = "btn btn-default btn-sm btn-danger";
+btn_eliminar_listado.style = "margin-left: 10px"
+btn_eliminar_listado.innerText = "Eliminar listado"
+btn_eliminar_listado.addEventListener("click", function () {
+    var answer = window.confirm("¿Estás seguro de continuar? Esto borrará todo el listado seleccionado");
+    if (answer) { window.location.reload() }
+})
+
+var fecha_actual = new Date, encodedUri, link;
 
 var busqueda_avanzada = document.getElementsByClassName("col-xs-12 col-sm-12 col-md-12 col-lg-12 busqueda-avanzada")[0];
 
@@ -226,20 +237,19 @@ function crearListado() {
 }
 
 function mostrarBtnMail() {
-    if (document.getElementById("mail") == null) {
-        div_mail.innerHTML = '<a id="mail" class="btn btn-default btn-sm"><i class="fa fa-paper-plane"></i> Generar mail </a>';
-        div_mail.style.textAlign = "center";
-        div_mail.style.marginBottom = "20px";
-        document.getElementsByTagName("div")[77].append(div_mail);
-        enviarMail();
-    } else {
+    if (document.getElementById("mail") != null) {
         document.getElementById("mail").remove();
+    }
 
-        div_mail.innerHTML = '<a id="mail" class="btn btn-default btn-sm"><i class="fa fa-paper-plane"></i> Generar mail </a>';
-        div_mail.style.textAlign = "center";
-        div_mail.style.marginBottom = "20px";
-        document.getElementsByTagName("div")[77].append(div_mail);
-        enviarMail();
+    div_mail.innerHTML = '<a id="mail" class="btn btn-default btn-sm"><i class="fa fa-paper-plane"></i> Generar mail </a>';
+    div_mail.style.textAlign = "center";
+    div_mail.style.marginBottom = "20px";
+    document.getElementsByTagName("div")[77].append(div_mail);
+
+    enviarMail();
+
+    if (document.getElementById("btn_eliminar_listado") == null) {
+        document.getElementById("div_mail").append(btn_eliminar_listado);
     }
 }
 
@@ -339,7 +349,7 @@ function enviarMail() {
         for (let i = 0; i < rubros.length; i++) {
             const rubro_busqueda = rubros[i];
             htmlDocument += '<div style="margin-top: 10px; margin-bottom: 10px;">' + '\n'
-            htmlDocument += '<p style="font-weight: bold; font-size: 13px; text-decoration: underline"> Búsuqeda: ' + rubro_busqueda + '</p>' + '\n'
+            htmlDocument += '<p style="font-weight: bold; font-size: 13px; text-decoration: underline"> Búsqueda: ' + rubro_busqueda + '</p>' + '\n'
             for (let j = 0; j < objetoFinal.length; j++) {
                 const objeto_busqueda = objetoFinal[j];
                 if (rubro_busqueda == objeto_busqueda.busqueda) {
@@ -368,15 +378,27 @@ function enviarMail() {
         emlContent += '</html>' + '\n';
         emlContent += '' + '\n';
 
-        var encodedUri = encodeURI(emlContent); //encode spaces etc like a url
-        var a = document.createElement('a'); //make a link in document
+        encodedUri = encodeURI(emlContent); //encode spaces etc like a url
+        link = document.createElement('a'); //make a link in document
         var linkText = document.createTextNode("fileLink");
-        a.appendChild(linkText);
-        a.href = encodedUri;
-        a.id = 'fileLink';
-        a.download = 'correo.eml';
-        a.style = "display:none;"; //hidden link
-        document.body.appendChild(a);
+        link.appendChild(linkText);
+        link.href = encodedUri;
+        link.id = 'fileLink';
+        link.download = 'correo.eml';
+        link.style = "display:none;"; //hidden link
+        
+        if (document.getElementById("fileLink") == null) {
+            document.body.appendChild(link);
+        } else {
+            for (let i = 0; i < document.body.children.length; i++) {
+                const element = document.body.children[i];
+                if (element.id == "fileLink") {
+                    document.body.removeChild(element);
+                }
+            }
+            document.body.appendChild(link);
+        }
+
         document.getElementById('fileLink').click(); //click the link
     })
 }
